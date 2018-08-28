@@ -161,6 +161,12 @@ module.exports = class Myr {
           case '#':
             options.formatter = Formatters.getLegalitiesFormatter(this.legalityFormats, this.hp7);
             break;
+          case '!':
+            options.formatter = Formatters.getImageFormatter('normal');
+            break;
+          case '@':
+            options.formatter = Formatters.getImageFormatter('art_crop');
+            break;
           default:
             options.searchString = searchString.substring(1);
             options.formatter = Formatters.getNameFormatter();
