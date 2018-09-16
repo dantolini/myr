@@ -15,13 +15,16 @@ module.exports = class Myr {
     var myr = this;
 
     var helpString = 'Help me ' + myr.name + '!';
-    var randomString = 'OK ' + myr.name + ', what\'s spicy\\?';
-    var searchRegex = /\(\((.+)\)\)/;
+    var randomString = 'OK ' + myr.name + ', what\'s spicy?';
 
+    if(message === helpString) {
+      message = "((??))";
+    } else if(message === randomString){
+      message = "((?!))"
+    }
 
-    if (searchRegex.test(message)) {
-      var searchString = searchRegex.exec(message)[1];
-      var options = myr.parseOptions(searchString)
+    var options = myr.parseOptions(message)
+    if (options) {
       switch(options.searchType){
           case 'fuzzy':
             myr.searchFuzzy(options)
@@ -46,12 +49,11 @@ module.exports = class Myr {
   }
 
   respond(message, threadID){
-    if((message.attachment || message.body )) {
-      this.facebook.sendMessage(message, threadID, function(err, msg){
-        console.log(err)
-        console.log(msg)
-      });
-    }
+    console.log(message)
+    this.facebook.sendMessage(message, threadID, function(err, msg){
+      console.log(err)
+      console.log(msg)
+    });
   }
 
   respondError(error, threadID){
@@ -89,7 +91,7 @@ module.exports = class Myr {
       var cardArray = []
       myr.scryfall.Cards.search(options.searchString).cancelAfterPage()
       .on("data", function(result){
-        if(cardArray.length > options.max){
+        if(cardArray.length == options.max){
           this.cancel();
           return;
         }
@@ -107,7 +109,7 @@ module.exports = class Myr {
   searchFuzzy(options) {
     return new Promise((resolve, reject) => {
       var myr = this;
-      myr.scryfall.Cards.byName(options.searchString, true).then(function(result){
+      myr.scryfall.Cards.byName(options.searchString, true, options.searchOptions.set).then(function(result){
         if (myr.scryfall.error()){
           reject(myr.scryfall.error());
         } else {
@@ -130,64 +132,63 @@ module.exports = class Myr {
     })
   }
 
-  parseOptions(searchString){
+  parseOptions(message){
+    var searchRegex = /\(\(([&!@$#+?]?)([^|]*)[|]?(.*)\)\)/;
+    if(!searchRegex.test(message)){
+      return false;
+    }
+
     var options = {};
-    var formatSpecifier = searchString.charAt(0);
-    options.searchString = searchString.substring(1);
+    var regexResult = searchRegex.exec(message);
+
+    var formatSpecifier = regexResult[1];
+    options.searchString = regexResult[2];
+    var optionsString = regexResult[3];
     options.searchType = "fuzzy"
+    options.max = 5;
+
+    if (formatSpecifier == '?'){
+      options.searchType = "random";
+      formatSpecifier = options.searchString = regexResult[2];
+    } else if (formatSpecifier == '+') {
+      options.searchType = "fullText";
+      formatSpecifier = optionsString.charAt(0);
+    } else {
+      options.searchOptions = {
+        "set": optionsString
+      }
+    }
     switch(formatSpecifier){
       case '$':
         options.formatter = Formatters.getPriceFormatter(this.currencyConverter);
-        break;
-      case '+':
-        options.formatter = Formatters.getNameFormatter();
-        options.searchType = "fullText";
         options.max = 5;
-        break;
-      case '|':
-        formatSpecifier = searchString.charAt(1);
-        options.searchString = searchString.substring(2);
-        options.searchType = "random";
-        switch(formatSpecifier){
-          case '&':
-            options.formatter = Formatters.getCardTextFormatter();
-            break;
-          case '$':
-            options.formatter = Formatters.getPriceFormatter(this.currencyConverter);
-            break;
-          case '?':
-            options.searchType = "help"
-            break;
-          case '#':
-            options.formatter = Formatters.getLegalitiesFormatter(this.legalityFormats, this.hp7);
-            break;
-          case '!':
-            options.formatter = Formatters.getImageFormatter('normal');
-            break;
-          case '@':
-            options.formatter = Formatters.getImageFormatter('art_crop');
-            break;
-          default:
-            options.searchString = searchString.substring(1);
-            options.formatter = Formatters.getNameFormatter();
-            break;
-        }
         break;
       case '#':
         options.formatter = Formatters.getLegalitiesFormatter(this.legalityFormats, this.hp7);
+        options.max = 1;
         break;
       case '!':
         options.formatter = Formatters.getImageFormatter('normal');
+        options.max = 1;
         break;
       case '@':
         options.formatter = Formatters.getImageFormatter('art_crop');
+        options.max = 2;
         break;
       case '&':
         options.formatter = Formatters.getCardTextFormatter();
+        options.max = 3;
         break;
-      default: ''
-        options.searchString = searchString;
-        options.formatter = Formatters.getCardTextFormatter();
+      case '?':
+        options.searchType = "help"
+        break;
+      default:
+        if(options.searchType == "fuzzy"){
+          options.formatter = Formatters.getCardTextFormatter();
+        } else {
+          options.formatter = Formatters.getNameFormatter();
+          options.max = 5;
+        }
         break;
       }
       return options;

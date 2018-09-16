@@ -18,7 +18,7 @@ __((__[_format specifier_]__search__[|_SET_]__))__
 |$| Price (in USD and AUD)| ✔️ |
 |#| Legality| ✔️ |
 
-SET: 3(or more) character set code to select a particular printing of a card. ❌
+SET: 3(or more) character set code to select a particular printing of a card. ✔️
 
 ### Scryfall Search Syntax
 __((+search|__[_format specifier_][_options_]__))__
@@ -26,11 +26,11 @@ __((+search|__[_format specifier_][_options_]__))__
 |format specifier  |result   |  status |
 |----|----|----|
 |none| Card name only| ✔️ |
-|&| Text representation of the card| ❌ |
-|!| Full card image| ❌ |
-|@| Card art image (with artist)| ❌ |
-|$| Price (in USD and AUD)| ❌ |
-|#| Legality| ❌ |
+|&| Text representation of the card| ✔️ |
+|!| Full card image| ✔️ |
+|@| Card art image (with artist)| ✔️ |
+|$| Price (in USD and AUD)| ✔️ |
+|#| Legality| ✔️ |
 
 
 
@@ -43,7 +43,7 @@ __((+search|__[_format specifier_][_options_]__))__
 More information on these options can be found [here](https://scryfall.com/docs/api/cards/search)
 
 ### Special Command Syntax
-__((|__[_format specifier_]__))__
+__((?__[_format specifier_]__))__
 
 |format specifier  |result   |  status |
 |----|----|----|

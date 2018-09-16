@@ -13,7 +13,7 @@ var credentials = {
 
 
 var hp7 = JSON.parse(fs.readFileSync('./7ph.json', 'utf8'));
-//login({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
+// login({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
 login(credentials, (err, api) => {
   if(err){
     return console.error(err);
@@ -36,23 +36,20 @@ login(credentials, (err, api) => {
 // let bot = new Myr("Jin-Gitaxias", Scry, "", getConverter(false), hp7)
 // bot.parse("((@opt))", 215) //Help
 // bot.parse("((!fame))", 542);
-//bot.parse("((|))", 333)
+// bot.parse("((?&))", 333)
 // bot.parse('((+Blood Scriv))', 333)
 // bot.parse('((who))', 32333)
 // bot.parse('((#lim-dul vault))', 32333)
-//bot.parse('((+golem ta))', 1234)
-//bot.parse('??cardname??options??')
+// bot.parse('((+golem ta))', 1234)
 // bot.parse('((whohjhdsfjdsvhjfvsdhjfvds))')
 // bot.parse("((who what))", 32442)
-//bot.parse('##snapcaster mage##')
 
 // bot.parse('((wheel of fate))', 342)
-//bot.parse('##very cryptic com##')
 // bot.parse('((#dryad arbor))', 4444)
-// bot.parse('$$nyx$$', "result")
+// bot.parse('((!nyx))', "result")
 // bot.parse('(($tolaria west))', "result")
 // bot.parse('((+is:fetchland))', "result:") //put max in?
-
+// bot.parse('((+is:fetchland|@))', "result:") //put max in?
 // bot.parse("((@huntmaster of))", 485)
 // bot.parse("((@Akki Lavarunner))", 3424)
 // bot.parse("((!Brisela, Voice of Nightmares))",123123)
@@ -60,6 +57,8 @@ login(credentials, (err, api) => {
 // bot.parse("((!Hedron-Field Purists))", 234);
 // bot.parse("((!flame of keld))", 231);
 // bot.parse("((!beck))", 24);
+// bot.parse("((!warhammer|MRD))")
+// bot.parse("Help me Jin-Gitaxias!");
 
 function getConverter(getRates){
   var fx = require("money");
